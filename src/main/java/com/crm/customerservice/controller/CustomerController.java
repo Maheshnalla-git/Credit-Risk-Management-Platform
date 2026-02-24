@@ -1,5 +1,6 @@
 package com.crm.customerservice.controller;
 
+import com.crm.customerservice.response.CustomerDetailsResponse;
 import com.crm.customerservice.response.CustomerResponse;
 import com.crm.customerservice.request.CustomerRequest;
 import com.crm.customerservice.service.CustomerService;
@@ -43,5 +44,11 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+    }
+
+    // ✅ NEW ENDPOINT: customer + loan details
+    @GetMapping("/{id}/details")
+    public CustomerDetailsResponse getCustomerDetails(@PathVariable Long id) {
+        return customerService.getCustomerDetails(id);
     }
 }
