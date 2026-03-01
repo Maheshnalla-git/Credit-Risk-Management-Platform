@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -74,28 +75,34 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long id) {
-        // Optional: you can check existence first, but deleteById is fine for now
         customerRepository.deleteById(id);
     }
 
-    // ✅ Customer + Loan (calling loan-service via API Gateway)
+    // ✅ Customer + Loans (calling loan-service via API Gateway)
     public CustomerDetailsResponse getCustomerDetails(Long id) {
 
         // 1) Get customer from DB
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
 
-        // 2) Get loan from Loan Service (through gateway)
-        LoanResponse loan = webClient.get()
-                .uri("/loans/customer/" + id)
-                .retrieve()
-                .bodyToMono(LoanResponse.class)
-                .block();
+        // 2) Get loans from Loan Service (through gateway)
+        //    If loan-service is down, return empty list (safe)
+        List<LoanResponse> loans = Collections.emptyList();
+        try {
+            loans = webClient.get()
+                    .uri("/loans/customer/" + id)
+                    .retrieve()
+                    .bodyToFlux(LoanResponse.class)
+                    .collectList()
+                    .block();
+        } catch (Exception e) {
+            // keep loans as empty list to avoid breaking customer details API
+        }
 
         // 3) Combine both
         CustomerDetailsResponse res = new CustomerDetailsResponse();
         res.setCustomer(toResponse(customer));
-        res.setLoan(loan);
+        res.setLoans(loans);
 
         return res;
     }

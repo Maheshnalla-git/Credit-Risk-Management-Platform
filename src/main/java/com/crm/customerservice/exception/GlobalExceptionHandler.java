@@ -33,6 +33,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationErrors(
+            org.springframework.web.bind.MethodArgumentNotValidException ex,
+            HttpServletRequest request
+    ) {
+        String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                400,
+                message,
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     // simple response model for errors
     public static class ErrorResponse {
         private LocalDateTime time;
