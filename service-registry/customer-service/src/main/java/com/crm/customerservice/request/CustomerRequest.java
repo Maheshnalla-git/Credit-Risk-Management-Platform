@@ -2,17 +2,19 @@ package com.crm.customerservice.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class CustomerRequest {
 
     @NotBlank(message = "name is required")
     private String name;
 
-    @Email(message = "email should be valid")
     @NotBlank(message = "email is required")
+    @Email(message = "email should be valid")
     private String email;
 
     @NotBlank(message = "phone is required")
+    @Pattern(regexp = "\\d{10}", message = "phone must be 10 digits")
     private String phone;
 
     public String getName() { return name; }
