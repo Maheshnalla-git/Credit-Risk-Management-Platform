@@ -31,3 +31,21 @@ build/
 
 ### VS Code ###
 .vscode/
+# build output
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# H2 local DB files (if you use file-based H2)
+data/
+*.mv.db
+*.trace.db
+
+# Logs
+*.log
