@@ -3,7 +3,7 @@ package com.crm.loanservice.client;
 import java.util.List;
 
 public class RiskResponse {
-    private String decision;
+    private String decision; // APPROVED or REJECTED
     private Integer score;
     private List<String> reasons;
 

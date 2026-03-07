@@ -29,6 +29,41 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                400,
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex, HttpServletRequest request) {
+
+        // If it's our risk-service down message, return 503
+        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("risk service unavailable")) {
+            ErrorResponse error = new ErrorResponse(
+                    LocalDateTime.now(),
+                    503,
+                    ex.getMessage(),
+                    request.getRequestURI()
+            );
+            return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+        }
+
+        // Otherwise treat as 500
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                500,
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     @ExceptionHandler(LoanRejectedException.class)
     public ResponseEntity<ErrorResponse> handleLoanRejected(LoanRejectedException ex,

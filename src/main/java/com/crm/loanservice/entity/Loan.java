@@ -12,9 +12,18 @@ public class Loan {
     private Long id;
 
     private Long customerId;
+
     private Double loanAmount;
-    private String status;
-    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    private LoanStatus status;
+
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -25,8 +34,8 @@ public class Loan {
     public Double getLoanAmount() { return loanAmount; }
     public void setLoanAmount(Double loanAmount) { this.loanAmount = loanAmount; }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public LoanStatus getStatus() { return status; }
+    public void setStatus(LoanStatus status) { this.status = status; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
